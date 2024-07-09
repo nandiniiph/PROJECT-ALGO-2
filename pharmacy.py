@@ -141,3 +141,25 @@ def tambah_obat(obat_list):
         obat_baru = Obat(nama, kondisi_kesehatan, kategori, stok, harga, terjual=0)
         obat_list.append(obat_baru)
         print(Fore.BLUE + "Obat baru berhasil ditambahkan.")
+
+
+    write_obat('obat.csv', obat_list)
+
+def read_obat(filename):
+    obat_list = []
+    with open(filename, 'r', newline='') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            terjual = row.get('terjual', 0)
+            obat_list.append(Obat(row['nama'].capitalize(), row['kondisi_kesehatan'].capitalize(), 
+            row['kategori'].capitalize(), row['stok'], row['harga'], terjual))
+    return obat_list
+
+def write_obat(filename, obat_list):
+    with open(filename, 'w', newline='') as file:
+        fieldnames = ['nama', 'kondisi_kesehatan', 'kategori', 'stok', 'harga', 'terjual']
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        for obat in obat_list:
+            writer.writerow({'nama': obat.nama, 'kondisi_kesehatan': obat.kondisi_kesehatan, 'kategori': obat.kategori, 
+                             'stok': obat.stok, 'harga': obat.harga, 'terjual': obat.terjual})
