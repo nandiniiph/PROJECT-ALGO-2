@@ -14,3 +14,13 @@ def loading_page(seconds):
         sys.stdout.flush()
         time.sleep(0.1)
     os.system('cls')
+
+class Obat:
+    def __init__(self, nama, kondisi_kesehatan, kategori, stok, harga, terjual=0):
+        self.nama = nama
+        self.kondisi_kesehatan = kondisi_kesehatan
+        self.kategori = kategori
+        self.stok = int(stok)
+        self.harga = int(harga)
+        self.terjual = int(terjual) if terjual else 0
+
