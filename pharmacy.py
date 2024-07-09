@@ -131,3 +131,17 @@ def tambah_obat(obat_list):
             else:
                 print(Fore.RED + "Pilihan tidak valid. Operasi dibatalkan.")
                 return
+            
+
+    if not obat_ditemukan:
+        kondisi_kesehatan = input(Fore.YELLOW + "Masukkan kondisi kesehatan obat: ").strip().capitalize()
+        kategori = input(Fore.YELLOW + "Masukkan kategori obat: ").strip().capitalize()
+        stok = int(input(Fore.YELLOW + "Masukkan jumlah stok obat: ").strip())
+        harga = input(Fore.YELLOW + "Masukkan harga obat: ").strip()
+        obat_baru = Obat(nama, kondisi_kesehatan, kategori, stok, harga, terjual=0)
+        obat_list.append(obat_baru)
+        print(Fore.BLUE + "Obat baru berhasil ditambahkan.")
+
+
+
+    write_obat('obat.csv', obat_list)
