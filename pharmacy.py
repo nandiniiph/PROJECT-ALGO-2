@@ -605,3 +605,12 @@ def admin_menu(obat_list):
         
         else:
             print(Fore.RED + "Pilihan tidak valid. Silakan pilih kembali.")
+
+def main():
+    f = Figlet(font='big')
+    e_pharmacy = f.renderText('E-PHARMACY')
+    print(Fore.BLUE + e_pharmacy.rstrip('\n').center(42))
+    print(Fore.BLUE + "=========================================")
+    print(Fore.WHITE + "  Silahkan Pilih Opsi Terlebih Dahulu   ")
+    print(Fore.BLUE + "=========================================")
+    obat_list = read_obat('obat.csv')
