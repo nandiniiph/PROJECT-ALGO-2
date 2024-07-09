@@ -58,3 +58,27 @@ def login_user():
     else:
         print(Fore.RED + "Username atau password salah.")
         return False
+
+def register_or_login_user(obat_list):
+    os.system('cls')
+    print(Fore.BLUE + "=========================================")
+    print(Fore.BLUE + "1. Login")
+    print(Fore.BLUE + "2. Register")
+    print(Fore.BLUE + "=========================================")
+    choice = input(Fore.BLUE +"Masukkan pilihan Anda (1/2): ")
+    os.system('cls') 
+
+    if choice == '1': 
+        os.system('cls')
+        if login_user():
+            os.system('cls')
+            user_menu(obat_list)
+        
+    elif choice == '2':  
+        os.system('cls')
+        if register_user(obat_list):
+            os.system('cls')
+            user_menu(obat_list)
+    else:
+        print(Fore.RED + "Pilihan tidak valid. Silakan pilih kembali.")
+        os.system('cls')
