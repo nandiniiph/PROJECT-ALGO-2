@@ -33,4 +33,13 @@ class Transaksi:
         self.subtotal = int(subtotal)
         self.no_transaksi = int(no_transaksi)
 
-
+def register_user(obat_list):
+    print(Fore.YELLOW + "=========================================")
+    print(Fore.CYAN +   "                REGISTER                 ")
+    print(Fore.YELLOW + "=========================================")
+    username = input(Fore.YELLOW + "Masukkan username baru: ")
+    password = input(Fore.YELLOW + "Masukkan password baru: ")
+    add_user(username, password)
+    print(Fore.YELLOW + "Register berhasil.")
+    os.system('cls')
+    user_menu(obat_list)
