@@ -163,3 +163,20 @@ def write_obat(filename, obat_list):
         for obat in obat_list:
             writer.writerow({'nama': obat.nama, 'kondisi_kesehatan': obat.kondisi_kesehatan, 'kategori': obat.kategori, 
                              'stok': obat.stok, 'harga': obat.harga, 'terjual': obat.terjual})
+
+
+def hapus_obat(obat_list):
+    print(Fore.CYAN + "=========================================")
+    print(Fore.CYAN + "            HAPUS OBAT                   ")
+    print(Fore.CYAN + "=========================================")
+    nama_obat = input(Fore.CYAN + "Masukkan nama obat yang ingin dihapus: ").strip().capitalize()  
+    found = False
+    for obat in obat_list:
+        if obat.nama == nama_obat:
+            obat_list.remove(obat)
+            write_obat('obat.csv', obat_list)
+            found = True
+            print(Fore.RED + "Obat berhasil dihapus.")
+            break
+    if not found:
+        print(Fore.RED + "Obat tidak ditemukan.")
