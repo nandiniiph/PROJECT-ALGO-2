@@ -24,3 +24,13 @@ class Obat:
         self.harga = int(harga)
         self.terjual = int(terjual) if terjual else 0
 
+class Transaksi:
+    def __init__(self, tanggal, nama, jumlah_beli, harga, subtotal, no_transaksi):
+        self.tanggal = tanggal
+        self.nama = nama
+        self.harga = int(harga)
+        self.jumlah_beli = int(jumlah_beli)
+        self.subtotal = int(subtotal)
+        self.no_transaksi = int(no_transaksi)
+
+
