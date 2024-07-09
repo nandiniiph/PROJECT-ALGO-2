@@ -108,3 +108,26 @@ def check_user(username, password):
             if row['username'] == username and row['password'] == password:
                 return True
     return False
+
+def tambah_obat(obat_list):
+    print(Fore.YELLOW + "=========================================")
+    print(Fore.YELLOW + "            TAMBAH OBAT                  ")
+    print(Fore.YELLOW + "=========================================")
+    nama = input(Fore.YELLOW + "Masukkan nama obat: ").strip().capitalize()
+
+    obat_ditemukan = False
+    for obat in obat_list:
+        if obat.nama == nama:
+            print(Fore.RED + f"Nama obat '{nama}' sudah ada.")
+            pilihan = input(Fore.YELLOW + "Apakah Anda ingin menambah stok? (y/n): ").strip().lower()
+            if pilihan == 'y':
+                stok_tambahan = int(input(Fore.YELLOW + "Masukkan jumlah stok yang ingin ditambahkan: "))
+                obat.stok += stok_tambahan
+                print(Fore.BLUE + "Stok obat berhasil ditambahkan.")
+                obat_ditemukan = True
+                break
+            elif pilihan == 'n':
+                return
+            else:
+                print(Fore.RED + "Pilihan tidak valid. Operasi dibatalkan.")
+                return
