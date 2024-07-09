@@ -82,3 +82,29 @@ def register_or_login_user(obat_list):
     else:
         print(Fore.RED + "Pilihan tidak valid. Silakan pilih kembali.")
         os.system('cls')
+
+def add_admin(username, password):
+    with open('admin.csv', 'a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([username, password])
+
+def add_user(username, password):
+    with open('user.csv', 'a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([username, password])
+
+def check_admin(username, password):
+    with open('admin.csv', 'r', newline='') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            if row['username'] == username and row['password'] == password:
+                return True
+    return False
+
+def check_user(username, password):
+    with open('user.csv', 'r', newline='') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            if row['username'] == username and row['password'] == password:
+                return True
+    return False
