@@ -614,3 +614,48 @@ def main():
     print(Fore.WHITE + "  Silahkan Pilih Opsi Terlebih Dahulu   ")
     print(Fore.BLUE + "=========================================")
     obat_list = read_obat('obat.csv')
+
+
+    while True:
+        print(Fore.YELLOW + "1. Admin")
+        print("2. User")
+        print("3. Keluar")
+        option = input("Masukkan pilihan Anda (1/2/3): ")
+
+        try:
+            if option == '1': 
+                os.system('cls')
+                loading_page(2)
+                print(Fore.BLUE + "=========================================")
+                print(Fore.WHITE + "            Silahkan Login              ")
+                print(Fore.BLUE + "=========================================")
+                username = input(Fore.WHITE +"Masukkan username admin: ")
+                password = input("Masukkan password admin: ")
+
+                if check_admin(username, password):
+                    print(Fore.GREEN + "\nSelamat datang, Admin!")
+                    admin_menu(obat_list) 
+
+                else:
+                    print(Fore.RED + "Username atau password admin salah. Silakan coba lagi.")
+
+            elif option == '2': 
+                os.system('cls')
+                loading_page(2)
+                register_or_login_user(obat_list)  
+
+            elif option == '3':  
+                os.system('cls')
+                print(Fore.CYAN + 'Terimakasih telah menggunakan aplikasi E-PHARMACY!!'.center(81))
+                exit() 
+
+            else:
+                print(Fore.RED + "Pilihan tidak valid. Silakan pilih kembali.")
+
+        except Exception as e:
+            print(f"\n{Fore.RED}Terjadi kesalahan: {e}")
+            print(f"\n{Fore.YELLOW}Terima kasih telah menggunakan program ini.")
+            break
+
+if __name__ == "__main__":
+    main()
