@@ -449,3 +449,159 @@ def cari_obat(obat_list):
                 display_obat_info(obat)
     else:
         print(Fore.RED + "Pilihan tidak valid. Silakan pilih kembali.")
+
+
+def user_menu(obat_list):
+    filename = 'obat.csv'  
+    filename_transaksi = 'transaksi.csv'
+    while True:
+        print(Fore.YELLOW + "=========================================")
+        print(Fore.BLUE + "            MENU USER                   ")
+        print(Fore.YELLOW + "=========================================")
+        print(Fore.CYAN + "1. Cari Obat")
+        print("2. Beli Obat")
+        print("3. Kembali ke menu utama")
+        user_option = input(Fore.YELLOW + "Masukkan pilihan Anda : ")
+
+        if user_option == '1':
+            time.sleep(1)
+            os.system('cls')
+            cari_obat(obat_list)
+        elif user_option == '2':
+            time.sleep(1)
+            os.system('cls')
+            beli_obat(obat_list)
+
+        elif user_option == '3':
+            os.system('cls')
+            break
+
+
+
+def knapsack(values, weights, budget):
+    n = len(values)
+    dp = [[0] * (budget + 1) for _ in range(n + 1)]
+
+    for i in range(1, n + 1):
+        for j in range(1, budget + 1):
+            if weights[i - 1] <= j:
+                dp[i][j] = max(values[i - 1] + dp[i - 1][j - weights[i - 1]], dp[i - 1][j])
+            else:
+                dp[i][j] = dp[i - 1][j]
+
+    selected_drugs = []
+    j = budget
+    for i in range(n, 0, -1):
+        if dp[i][j] != dp[i - 1][j]:
+            selected_drugs.append(i - 1)
+            j -= weights[i - 1]
+
+    return selected_drugs
+
+
+def kelola_stok():
+    file_path = 'obat.csv'
+    obat_list = read_obat(file_path)
+    budget = int(input(Fore.YELLOW + "Masukkan budget yang Anda miliki: "))
+
+    values = [obat.harga for obat in obat_list]
+    weights = [obat.stok for obat in obat_list]
+
+    selected_drugs = knapsack(values, weights, budget)
+
+    total_harga = 0
+    daftar_obat = []
+    for idx in selected_drugs:
+        obat = obat_list[idx]
+        jumlah_beli = min(obat.stok, (budget - total_harga) // obat.harga)
+        if jumlah_beli > 0:
+            total_harga += jumlah_beli * obat.harga
+            obat.stok += jumlah_beli
+            daftar_obat.append((obat.nama, jumlah_beli, obat.harga, jumlah_beli * obat.harga))
+
+    if daftar_obat:
+        print(Fore.GREEN + "Obat-obatan yang dapat dibeli dengan budget yang Anda miliki:")
+        for item in daftar_obat:
+            print(Fore.GREEN + f"Nama: {item[0]}, Jumlah: {item[1]}, Harga per unit: {item[2]}, Total: {item[3]}")
+        print(Fore.GREEN + f"Total Harga: {total_harga}")
+
+        write_obat(file_path, obat_list)
+    else:
+        print(Fore.RED + "Tidak ada obat yang bisa dibeli dengan budget tersebut.")
+    input(Fore.YELLOW +"Tekan Enter untuk kembali memilih...")
+    os.system('cls')
+
+
+def admin_menu(obat_list):
+    os.system('cls')
+    while True:
+        print(Fore.YELLOW + "=========================================")
+        print(Fore.BLUE + "            MENU ADMIN                   ")
+        print(Fore.YELLOW + "=========================================")
+        print(Fore.YELLOW + "1. Tambah Admin")
+        print("2. Tambah Obat")
+        print("3. Hapus Obat")
+        print("4. Kelola Stok")
+        print("5. Tampilkan Riwayat Transaksi")
+        print("6. Kembali ke menu utama")
+        admin_option = input(Fore.GREEN +"Masukkan pilihan Anda (1/2/3/4/5): ")
+
+        if admin_option == '1':
+            time.sleep(1)
+            os.system('cls')
+            print(Fore.YELLOW + "=========================================")
+            print(Fore.BLUE + "            TAMBAH ADMIN                   ")
+            print(Fore.YELLOW + "=========================================")
+            new_username = input(Fore.BLUE +"Masukkan username admin baru: ")
+            new_password = input("Masukkan password admin baru: ")
+            add_admin(new_username, new_password)
+            print(Fore.GREEN + "Admin baru berhasil ditambahkan.")
+            time.sleep(1)
+            os.system('cls')
+
+        elif admin_option == '2':
+            time.sleep(1)
+            os.system('cls')
+            tambah_obat(obat_list)
+            time.sleep(1)
+            os.system('cls')
+
+        elif admin_option == '3':
+            time.sleep(1)
+            os.system('cls')
+            hapus_obat(obat_list)
+            time.sleep(1)
+            os.system('cls')
+
+        elif admin_option == '4':
+            time.sleep(1)
+            os.system('cls')
+            print(Fore.YELLOW + "=======================================================")
+            print(Fore.BLUE +   "                  MENU KELOLA STOK                     ")
+            print(Fore.YELLOW + "=======================================================")
+            kelola_stok()
+            
+        elif admin_option == '5':
+            time.sleep(1)
+            os.system('cls')
+            transaksi_list = read_transaksi('transaksi.csv')
+            tampilkan_semua = input("Apakah Anda ingin menampilkan semua riwayat transaksi? (y/n): ").lower()
+            if tampilkan_semua == 'y':
+                display_riwayat_transaksi(transaksi_list)
+            elif tampilkan_semua == 'n':
+                try:
+                    tanggal_transaksi = input("Masukkan tanggal transaksi yang ingin ditampilkan (yyyy-mm-dd): ")
+                    display_riwayat_transaksi(transaksi_list, tanggal_transaksi)
+                except ValueError:
+                    print(Fore.RED + "Masukkan kode transaksi yang valid.")
+            else :
+                print("Input yang anda masukkan kurang tepat")
+            input("Tekan Enter untuk kembali memilih...")
+            os.system('cls')
+
+        elif admin_option == '6':
+            os.system('cls')
+            break
+        
+        else:
+            print(Fore.RED + "Pilihan tidak valid. Silakan pilih kembali.")
