@@ -180,3 +180,272 @@ def hapus_obat(obat_list):
             break
     if not found:
         print(Fore.RED + "Obat tidak ditemukan.")
+
+
+def add_transaksi_to_csv(filename, transaksi_data):
+    new_kode_transaksi = 1  
+
+    if os.path.exists(filename):
+        with open(filename, 'r') as file:
+            reader = csv.reader(file)
+            transaksi_ada = list(reader)
+            if transaksi_ada:  
+                last_transaksi = transaksi_ada[-1]
+                last_kode_transaksi = int(last_transaksi[-1])  
+                new_kode_transaksi = last_kode_transaksi + 1  
+
+    with open(filename, 'a', newline='') as file:
+        writer = csv.writer(file)
+        for data in transaksi_data:
+            data.append(new_kode_transaksi)
+            writer.writerow(data)
+
+def read_transaksi(filename):
+    transaksi_list = []
+    with open(filename, 'r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            transaksi_list.append(Transaksi(row['tanggal'], row['nama'], row['jumlah_beli'], row['harga'], row['subtotal'], row['no_transaksi']))
+    return transaksi_list
+
+def display_riwayat_transaksi(transaksi_list, tanggal=None):
+    print(Fore.YELLOW + "=========================================")
+    print(Fore.BLUE + "      TAMPILKAN RIWAYAT TRANSAKSI          ")
+    print(Fore.YELLOW + "=========================================")
+    if not transaksi_list:
+        print(Fore.RED + "Belum ada riwayat transaksi.")
+    else:
+        print(Fore.MAGENTA + "Riwayat Transaksi:")
+
+        if tanggal:
+            transaksi_list = [transaksi for transaksi in transaksi_list if transaksi.tanggal.split()[0] == tanggal]
+        
+        if not transaksi_list:
+            print(f"Tidak ada transaksi pada tanggal {tanggal}.")
+            return
+        
+        group_transaksi = {}
+        for transaksi in transaksi_list:
+            if transaksi.no_transaksi not in group_transaksi:
+                group_transaksi[transaksi.no_transaksi] = []
+            group_transaksi[transaksi.no_transaksi].append(transaksi)
+        
+        for no_transaksi, transaksi_group in group_transaksi.items():
+            print(Fore.CYAN + " " * 25 + "E-PHARMACY")
+            print(Fore.CYAN + " " * 22 + "STRUK PEMBELIAN")
+            print(Fore.GREEN + "No. Transaksi:", no_transaksi)
+            print(Fore.GREEN + "Tanggal Transaksi:", transaksi_group[0].tanggal)  
+            print(Fore.YELLOW + "{:<20} | {:<10} | {:<10} | {:<10}".format("Nama Barang", "Qty", "Harga", "Sub Total"))
+            print(Fore.YELLOW + "-" * 60)
+            total_harga = 0
+            for detail_transaksi in transaksi_group:
+                total_harga += int(detail_transaksi.subtotal)
+                print(Fore.WHITE + "{:<20} | {:<10} | {:<10} | {:<10}".format(detail_transaksi.nama, detail_transaksi.jumlah_beli, detail_transaksi.harga, detail_transaksi.subtotal))
+            print(Fore.YELLOW + "-" * 60)
+            print(Fore.WHITE + "{:<20} | {:<10} | {:<10} | {:<10}".format("TOTAL :", "", "", total_harga))
+            print(Fore.YELLOW + "=" * 60)
+
+def display_obat_info(obat):
+    table = PrettyTable(["Nama", "Kondisi Kesehatan", "Kategori", "Stok", "Harga (Rp.)"])
+    table.add_row([obat.nama, obat.kondisi_kesehatan, obat.kategori, obat.stok, obat.harga])
+    print(table)
+
+def display_all_obat(obat_list):
+    merge_sort(obat_list, 'nama')
+    table = PrettyTable(["Nama", "Harga (Rp.)"])
+    table.align["Nama"] = "l" 
+    for obat in obat_list:
+        table.add_row([obat.nama, obat.harga])
+    print(table)
+
+def merge_sort(arr, key):
+    if len(arr) > 1:
+        mid = len(arr) // 2 
+        left_half = arr[:mid]
+        right_half = arr[mid:]
+
+        merge_sort(left_half, key)
+        merge_sort(right_half, key)
+
+        i = j = k = 0 
+
+        while i < len(left_half) and j < len(right_half):
+            if getattr(left_half[i], key) < getattr(right_half[j], key):
+                arr[k] = left_half[i]
+                i += 1
+            else:
+                arr[k] = right_half[j]
+                j += 1
+            k += 1
+
+        while i < len(left_half):
+            arr[k] = left_half[i]
+            i += 1
+            k += 1
+
+        while j < len(right_half):
+            arr[k] = right_half[j]
+            j += 1
+            k += 1
+
+def binary_search(arr, key, value):
+    left = 0
+    right = len(arr) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if getattr(arr[mid], key) == value: 
+            return mid
+        elif getattr(arr[mid], key) < value:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
+
+def beli_obat(obat_list):
+    pembelian_list = []
+    print(Fore.BLUE + "=========================================")
+    print(Fore.YELLOW + "            BELI OBAT                  ")
+    print(Fore.BLUE + "=========================================")
+    while True:
+        display_all_obat(obat_list) 
+        nama_obat = input(Fore.YELLOW + "\nMasukkan nama obat yang ingin Anda beli: ").capitalize()
+        try:
+            jumlah_beli = int(input(Fore.YELLOW + "Masukkan jumlah yang ingin Anda beli: "))
+            obat, jumlah = beli_obat_detail(obat_list, nama_obat, jumlah_beli)
+            if obat:
+                for i, item in enumerate(pembelian_list):
+                    if item[0].nama == obat.nama:
+                        pembelian_list[i] = (item[0], item[1] + jumlah)
+                        break
+                else:
+                    pembelian_list.append((obat, jumlah))
+                    os.system('cls')
+            else:
+                break
+                
+            tambah_obat_choice = input(Fore.YELLOW + "Apakah Anda ingin menambah obat lain? (y/n): ").lower()
+            os.system('cls')  
+            if tambah_obat_choice != 'y':
+                break
+        except ValueError:
+            print(Fore.RED + "Mohon masukkan jumlah yang valid.")
+
+    if pembelian_list:
+        print_struk(pembelian_list)
+        new_transaction_data = []
+        for item in pembelian_list:
+            obat, jumlah_beli = item
+            new_transaction_data.append([datetime.now().strftime("%Y-%m-%d %H:%M:%S"), obat.nama, jumlah_beli, obat.harga, obat.harga * jumlah_beli])
+
+        print_struk(pembelian_list)
+
+        add_transaksi_to_csv('transaksi.csv', new_transaction_data)
+
+
+def beli_obat_detail(obat_list, nama_obat, jumlah_beli):
+    merge_sort(obat_list, 'nama')
+
+    idx = binary_search(obat_list, 'nama', nama_obat)
+    if idx != -1:
+        obat = obat_list[idx]
+        if obat.stok > 0:
+            if jumlah_beli > 0:
+                if obat.stok >= jumlah_beli:
+                    obat.stok -= jumlah_beli
+                    obat.terjual += jumlah_beli
+                    write_obat('obat.csv', obat_list)
+                    return obat, jumlah_beli
+                else:
+                    print("Jumlah beli melebihi stok yang tersedia.")
+                    return None, 0
+            else:
+                print("Jumlah beli tidak valid.")
+                return None, 0
+        else:
+            print(f"Obat {obat.nama} sudah habis.")
+            return None, 0
+    else:
+        print("Obat tidak ditemukan.")
+        return None, 0
+
+
+def print_struk(pembelian_list):
+    os.system('cls')
+    print(Fore.YELLOW + " " * 25 + "E-PHARMACY")
+    print(Fore.YELLOW + " " * 22 + "STRUK PEMBELIAN")
+    print(Fore.YELLOW + "Tanggal Transaksi:", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))  
+    print(Fore.BLUE + "{:<20} | {:<10} | {:<10} | {:<10}".format("Nama Barang", "Qty", "Harga", "Sub Total")) 
+    print(Fore.WHITE + "-" * 60)
+    total_harga = 0
+    for item in pembelian_list:
+        obat, jumlah_beli = item
+        subtotal = obat.harga * jumlah_beli
+        total_harga += subtotal
+        print(Fore.WHITE + "{:<20} | {:<10} | {:<10} | {:<10}".format(obat.nama, jumlah_beli, obat.harga, subtotal)) 
+        print(Fore.WHITE + "-" * 60)
+    print(Fore.WHITE + "{:<20} | {:<10} | {:<10} | {:<10}".format("TOTAL :", "", "", total_harga))
+    print(Fore.YELLOW + "=" * 60)
+    print(Fore.WHITE + '--- Terima Kasih Telah Berkunjung Ke Apotek Kami ---')
+
+def cari_obat(obat_list):
+    print(Fore.BLUE + "=========================================")
+    print(Fore.YELLOW + "            CARI OBAT                   ")
+    print(Fore.BLUE + "=========================================")
+    search_option = input(Fore.CYAN + "\nPilih metode pencarian:\n1. Berdasarkan nama obat\n2. Berdasarkan kondisi kesehatan\n3. Berdasarkan kategori\nMasukkan pilihan pencarian Anda : ")
+    os.system('cls') 
+    
+    if search_option == '1':
+        cari_nama = input(Fore.YELLOW + "\nMasukkan nama obat yang ingin anda cari: ").capitalize()
+        merge_sort(obat_list, 'nama')
+        idx = binary_search(obat_list, 'nama', cari_nama)
+        if idx != -1:
+            display_obat_info(obat_list[idx]) 
+        else:
+            print(Fore.RED + "Obat tidak ditemukan.")
+
+    elif search_option == '2':
+        cari_kondisi = input(Fore.YELLOW + "\nMasukkan kondisi kesehatan yang ingin Anda cari: ").capitalize()
+        
+        merge_sort(obat_list, 'kondisi_kesehatan')
+
+        matching_obats = []
+        idx = binary_search(obat_list, 'kondisi_kesehatan', cari_kondisi)
+        if idx != -1:
+            matching_obats.append(obat_list[idx])
+            left_idx = idx - 1
+            while left_idx >= 0 and obat_list[left_idx].kondisi_kesehatan == cari_kondisi:
+                matching_obats.append(obat_list[left_idx])
+                left_idx -= 1
+            right_idx = idx + 1
+            while right_idx < len(obat_list) and obat_list[right_idx].kondisi_kesehatan == cari_kondisi:
+                matching_obats.append(obat_list[right_idx])
+                right_idx += 1
+
+        if matching_obats:
+            for obat in matching_obats:
+                display_obat_info(obat)
+        else:
+            print(Fore.RED + "Obat tidak ditemukan.")
+    elif search_option == '3':
+        cari_kategori = input(Fore.YELLOW + "\nMasukkan kategori obat yang ingin Anda cari: ").capitalize()
+        
+        merge_sort(obat_list, 'kategori')
+
+        matching_obats = []
+        idx = binary_search(obat_list, 'kategori', cari_kategori)
+        if idx != -1:
+            matching_obats.append(obat_list[idx])
+            left_idx = idx - 1
+            while left_idx >= 0 and obat_list[left_idx].kategori == cari_kategori:
+                matching_obats.append(obat_list[left_idx])
+                left_idx -= 1
+            right_idx = idx + 1
+            while right_idx < len(obat_list) and obat_list[right_idx].kategori == cari_kategori:
+                matching_obats.append(obat_list[right_idx])
+                right_idx += 1
+
+        if matching_obats:
+            for obat in matching_obats:
+                display_obat_info(obat)
+    else:
+        print(Fore.RED + "Pilihan tidak valid. Silakan pilih kembali.")
