@@ -1,0 +1,16 @@
+import csv
+import os
+import time
+import sys
+from datetime import datetime
+from colorama import init, Fore
+from prettytable import PrettyTable
+from pyfiglet import Figlet
+
+def loading_page(seconds):
+    animation = "|/-\\"
+    for _ in range(seconds * 10):
+        sys.stdout.write("\r" + Fore.BLUE + "=============== Loading =============" + animation[_ % len(animation)])
+        sys.stdout.flush()
+        time.sleep(0.1)
+    os.system('cls')
