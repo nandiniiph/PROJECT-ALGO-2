@@ -43,3 +43,18 @@ def register_user(obat_list):
     print(Fore.YELLOW + "Register berhasil.")
     os.system('cls')
     user_menu(obat_list)
+
+def login_user():
+    os.system('cls')
+    print(Fore.YELLOW + "=========================================")
+    print(Fore.CYAN +   "                LOGIN                    ")
+    print(Fore.YELLOW + "=========================================")
+    username = input(Fore.YELLOW + "Masukkan username: ")
+    password = input(Fore.YELLOW + "Masukkan password: ")
+    if check_user(username, password):
+        print(Fore.YELLOW + "Login berhasil.")
+        return True
+        os.system('cls')
+    else:
+        print(Fore.RED + "Username atau password salah.")
+        return False
