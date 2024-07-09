@@ -141,7 +141,3 @@ def tambah_obat(obat_list):
         obat_baru = Obat(nama, kondisi_kesehatan, kategori, stok, harga, terjual=0)
         obat_list.append(obat_baru)
         print(Fore.BLUE + "Obat baru berhasil ditambahkan.")
-
-
-
-    write_obat('obat.csv', obat_list)
